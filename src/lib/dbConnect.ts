@@ -1,4 +1,14 @@
+/* eslint-disable no-var */
 import mongoose from "mongoose";
+
+declare global {
+  var mongoose:
+    | {
+        conn: any;
+        promise: any;
+      }
+    | undefined;
+}
 
 const MONGODB_URI = process.env.MONGODB_URI!;
 
@@ -27,7 +37,6 @@ async function dbConnect() {
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
       return mongoose;
     });
-    console.log("Connected to MongoDB");
   }
 
   try {
