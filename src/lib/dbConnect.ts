@@ -18,7 +18,10 @@ if (!MONGODB_URI) {
   );
 }
 
-let cached = global.mongoose || { conn: null, promise: null };
+const cached: {
+  conn: mongoose.Connection | null;
+  promise: Promise<mongoose.Connection> | null;
+} = global.mongoose || { conn: null, promise: null };
 
 async function dbConnect(): Promise<mongoose.Connection> {
   if (cached.conn) {
