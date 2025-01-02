@@ -4,8 +4,8 @@ import mongoose from "mongoose";
 declare global {
   var mongoose:
     | {
-        conn: any;
-        promise: any;
+        conn: mongoose.Connection | null;
+        promise: Promise<mongoose.Connection> | null;
       }
     | undefined;
 }
@@ -18,24 +18,20 @@ if (!MONGODB_URI) {
   );
 }
 
-let cached = global.mongoose;
+let cached = global.mongoose || { conn: null, promise: null };
 
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
-}
-
-async function dbConnect() {
+async function dbConnect(): Promise<mongoose.Connection> {
   if (cached.conn) {
     return cached.conn;
   }
 
   if (!cached.promise) {
-    const opts = {
+    const opts: mongoose.ConnectOptions = {
       bufferCommands: false,
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      return mongoose;
+      return mongoose.connection;
     });
   }
 
